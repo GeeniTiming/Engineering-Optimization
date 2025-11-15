@@ -517,6 +517,7 @@ def main():
         df_dx = sp.lambdify(x, df_dx_expr, 'numpy')
         d2f_dx2_expr = sp.diff(df_dx_expr, x)
         d2f_dx2 = sp.lambdify(x, d2f_dx2_expr, 'numpy')
+        print(f"Function: {fx_expr}")
         return fx, df_dx, d2f_dx2
     
     fx, df_dx, d2f_dx2 = f()
