@@ -11,7 +11,7 @@ class OneDimensionalSearchingMethod:
         self.eps = eps
         self.history = {}
     
-    def plot(self, method_name: str, f: Callable, x_range: Tuple[float, float] = None):
+    def plot(self, method_name: str, f: Callable, x_range: Tuple[float, float]):
         """
         使用 FuncAnimation 动态绘制搜索过程
         """
