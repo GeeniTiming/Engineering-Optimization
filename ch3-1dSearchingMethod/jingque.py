@@ -99,7 +99,7 @@ class OneDimensionalSearchingMethod:
             current_scatter.set_offsets(np.c_[current_x, current_y])
             
             # 更新搜索区间
-            interval_rect.set_xy([a, y_min])
+            interval_rect.set_xy((a, y_min))
             interval_rect.set_width(b - a)
             
             # 找到当前最佳点
@@ -153,7 +153,7 @@ class OneDimensionalSearchingMethod:
             a, b = intervals[frame]
             
             # 更新区间显示
-            interval_rect.set_xy([a, y_min])
+            interval_rect.set_xy((a, y_min))
             interval_rect.set_width(b - a)
             
             # 显示测试点（区间端点）
@@ -207,7 +207,7 @@ class OneDimensionalSearchingMethod:
             mid_point = (a + b) / 2
             
             # 更新区间显示
-            interval_rect.set_xy([a, y_min])
+            interval_rect.set_xy((a, y_min))
             interval_rect.set_width(b - a)
             
             # 更新中点线
