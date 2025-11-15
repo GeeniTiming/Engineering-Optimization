@@ -526,22 +526,22 @@ def main():
     h = 1 / 2
     interval = method.success_failure(fx, a, h)
     print(f"Found interval: {interval}")
-    # method.plot('success_failure', fx, x_range=(-2, 2))
+    method.plot('success_failure', fx, x_range=(-2, 2))
     
     print("\nTesting Golden Section Search:")
     x_final_golden = method.golden_splitting(fx, 0, 2)
     print(f"Found minimum at x = {x_final_golden}, f(x) = {fx(x_final_golden)}")
-    # method.plot('golden_splitting', fx, x_range=(0, 2))
+    method.plot('golden_splitting', fx, x_range=(0, 2))
     
     print("\nTesting Binary Search:")
     x_final_binary = method.binary_splitting(df_dx, 0, 2)
     print(f"Found minimum at x = {x_final_binary}, f(x) = {fx(x_final_binary)}")
-    # method.plot('binary_splitting', fx, x_range=(0, 2))
+    method.plot('binary_splitting', fx, x_range=(0, 2))
     
     print("\nTesting Newton's Method:")
     x_final_newton = method.newton(fx, df_dx, d2f_dx2, 6)
     print(f"Found minimum at x = {x_final_newton}, f(x) = {fx(x_final_newton)}")
-    # method.plot('newton', fx, x_range=(0, 5))
+    method.plot('newton', fx, x_range=(0, 5))
     
     print("\nTesting Twice Interpolation:")
     x_final_twice = method.twice_interpolation(fx, 0, 1, 3)
