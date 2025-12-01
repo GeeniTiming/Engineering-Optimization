@@ -375,6 +375,7 @@ class OneDimensionalSearchingMethod:
         x2 = a + t * (b - a)
         
         # 记录初始点
+        print(f"Initial points: a={a:.3f}, b={b:.3f}, x1={x1:.3f}, x2={x2:.3f}")
         self.history['golden_splitting']['points'].extend([a, b, x1, x2])
         
         while True:
@@ -382,10 +383,14 @@ class OneDimensionalSearchingMethod:
                 b = x2
                 x2 = x1
                 x1 = a + (1 - t) * (b - a)
+                print(f"Step {len(self.history['golden_splitting']['points']) // 4}: "
+                      f"a={a:.3f}, b={b:.3f}, x1={x1:.3f}, x2={x2:.3f}")
             else:
                 a = x1
                 x1 = x2
                 x2 = a + t * (b - a)
+                print(f"Step {len(self.history['golden_splitting']['points']) // 4}: "
+                      f"a={a:.3f}, b={b:.3f}, x1={x1:.3f}, x2={x2:.3f}")
             
             # 记录当前点
             self.history['golden_splitting']['points'].extend([a, b, x1, x2])
@@ -408,6 +413,7 @@ class OneDimensionalSearchingMethod:
         }
         
         # 记录初始区间
+        print(f"Initial interval: a={a:.3f}, b={b:.3f}")
         self.history['binary_splitting']['intervals'].append((a, b))
         
         while True:
@@ -423,6 +429,8 @@ class OneDimensionalSearchingMethod:
                 return x0
             
             # 记录当前区间
+            print(f"Step {len(self.history['binary_splitting']['intervals'])}: "
+                  f"a={a:.3f}, b={b:.3f}, x0={x0:.3f}, df_dx={derivative:.3f}")
             self.history['binary_splitting']['intervals'].append((a, b))
             
             if abs(b - a) < self.eps:
@@ -445,7 +453,9 @@ class OneDimensionalSearchingMethod:
             x2 = x1 - df_dx(x1) / d2f_dx2(x1)
             # 记录当前点
             self.history['newton']['points'].append(x2)
-            if abs(x2 - x1) < self.eps:
+            print(f"Step {len(self.history['newton']['points']) - 1}: "
+                  f"x1={x1:.3f}, x2={x2:.3f}, df_dx(x2)={df_dx(x2):.3f}")
+            if df_dx(x2) < self.eps:
                 self.history['newton']['final_point'] = x2
                 return x2
             x1 = x2
@@ -501,10 +511,50 @@ class OneDimensionalSearchingMethod:
                     self.history['twice_interpolation']['points'].append(point)
             self.history['twice_interpolation']['points'].sort()
     
+def test_success_failure(method: OneDimensionalSearchingMethod, 
+                         fx: Callable,):
+    print("Testing Success-Failure Method:")
+    a = -1 / 2
+    h = 1 / 2
+    interval = method.success_failure(fx, a, h)
+    print(f"Found interval: {interval}")
+    # method.plot('success_failure', fx, x_range=(-2, 2))
 
+def test_golden_splitting(method: OneDimensionalSearchingMethod, 
+                          fx: Callable,):
+    print("\nTesting Golden Section Search:")
+    x_final_golden = method.golden_splitting(fx, 0, 2)
+    print(f"Found minimum at x = {x_final_golden}, f(x) = {fx(x_final_golden)}")
+    # method.plot('golden_splitting', fx, x_range=(0, 2))
+    
+def test_binary_splitting(method: OneDimensionalSearchingMethod, 
+                          fx: Callable,
+                          df_dx: Callable,):
+    print("\nTesting Binary Search:")
+    x_final_binary = method.binary_splitting(df_dx, 0, 2)
+    print(f"Found minimum at x = {x_final_binary}, f(x) = {fx(x_final_binary)}")
+    # method.plot('binary_splitting', fx, x_range=(0, 2))
+
+def test_newton(method: OneDimensionalSearchingMethod, 
+                fx: Callable,
+                df_dx: Callable,
+                d2f_dx2: Callable,
+                x1: float,
+                ):
+    print("\nTesting Newton's Method:")
+    x_final_newton = method.newton(fx, df_dx, d2f_dx2, x1)
+    print(f"Found minimum at x = {x_final_newton}, f(x) = {fx(x_final_newton)}")
+    # method.plot('newton', fx, x_range=(0, 5))
+
+def test_twice_interpolation(method: OneDimensionalSearchingMethod, 
+                             fx: Callable,):
+    print("\nTesting Twice Interpolation:")
+    x_final_twice = method.twice_interpolation(fx, 0, 1, 3)
+    print(f"Found minimum at x = {x_final_twice}, f(x) = {fx(x_final_twice)}")
+    # method.plot('twice_interpolation', fx, x_range=(0, 4))
 
 def main():
-    method = OneDimensionalSearchingMethod(eps=0.2)
+    method = OneDimensionalSearchingMethod(eps=1e-2)
     
     def f():
         x = sp.symbols('x')
@@ -522,33 +572,15 @@ def main():
     
     fx, df_dx, d2f_dx2 = f()
     
-    print("Testing Success-Failure Method:")
-    a = -1 / 2
-    h = 1 / 2
-    interval = method.success_failure(fx, a, h)
-    print(f"Found interval: {interval}")
-    method.plot('success_failure', fx, x_range=(-2, 2))
+    # test_success_failure(method, fx)
     
-    print("\nTesting Golden Section Search:")
-    x_final_golden = method.golden_splitting(fx, 0, 2)
-    print(f"Found minimum at x = {x_final_golden}, f(x) = {fx(x_final_golden)}")
-    method.plot('golden_splitting', fx, x_range=(0, 2))
+    # test_golden_splitting(method, fx)
     
-    print("\nTesting Binary Search:")
-    x_final_binary = method.binary_splitting(df_dx, 0, 2)
-    print(f"Found minimum at x = {x_final_binary}, f(x) = {fx(x_final_binary)}")
-    method.plot('binary_splitting', fx, x_range=(0, 2))
+    # test_binary_splitting(method, fx, df_dx)
     
-    print("\nTesting Newton's Method:")
-    x_final_newton = method.newton(fx, df_dx, d2f_dx2, 6)
-    print(f"Found minimum at x = {x_final_newton}, f(x) = {fx(x_final_newton)}")
-    method.plot('newton', fx, x_range=(0, 5))
+    # test_newton(method, fx, df_dx, d2f_dx2, 6)
     
-    print("\nTesting Twice Interpolation:")
-    x_final_twice = method.twice_interpolation(fx, 0, 1, 3)
-    print(f"Found minimum at x = {x_final_twice}, f(x) = {fx(x_final_twice)}")
-    method.plot('twice_interpolation', fx, x_range=(0, 4))
-
+    test_twice_interpolation(method, fx)
 
 if __name__ == '__main__':
     main()
